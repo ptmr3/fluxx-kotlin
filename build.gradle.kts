@@ -6,9 +6,11 @@ plugins {
 
 group = "com.github.ptmr3"
 
-repositories {
-    mavenCentral()
-    maven { url = uri("https://jitpack.io") }
+allprojects {
+    repositories {
+        mavenCentral()
+        maven { url = uri("https://jitpack.io") }
+    }
 }
 
 dependencies {
