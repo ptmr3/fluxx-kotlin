@@ -12,8 +12,20 @@ repositories {
 }
 
 dependencies {
-    api(libs.kotlinx.coroutines)
+    implementation(libs.kotlinx.coroutines)
     testImplementation(kotlin("test"))
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = "com.github.ptmr3"
+            artifactId = "fluxx"
+            version = "0.3"
+
+            from(components["kotlin"])
+        }
+    }
 }
 
 tasks.test {
