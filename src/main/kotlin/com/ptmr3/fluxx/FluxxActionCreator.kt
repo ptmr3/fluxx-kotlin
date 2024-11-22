@@ -25,6 +25,28 @@ abstract class FluxxActionCreator {
         }
         runBlocking {
             Fluxx.instance.getActionSubscriberMethods(FluxxAction(actionId, dataHashMap))
+                .collect { hashMap ->
+                    val method = hashMap[METHOD] as Method
+                    method.isAccessible = true
+                    try {
+                        method.invoke(hashMap[CLASS], hashMap[ACTION])
+                        mFluxxLog.print("ACTION: $actionId, ${data.toList()} -> ${hashMap[CLASS]?.javaClass?.simpleName}, ${hashMap[ACTION]}")
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+        }
+    }
+
+    protected fun publishParallelAction(actionId: String, vararg data: Any) {
+        require(data.size % 2 == 0) { "Data must be a valid list of key,value pairs" }
+        val dataHashMap = HashMap<String, Any>()
+        var i = 0
+        while (i < data.size) {
+            dataHashMap[data[i++] as String] = data[i++]
+        }
+        runBlocking {
+            Fluxx.instance.getActionSubscriberMethods(FluxxAction(actionId, dataHashMap))
                 .flowOn(Dispatchers.IO)
                 .collect { hashMap ->
                     val method = hashMap[METHOD] as Method
